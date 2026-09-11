@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Auto Clicker</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🖱️ Auto Clicker</h1>
+            <p>Automated clicking tool for productivity</p>
+        </div>
+
+        <div class="card settings-card">
+            <h2>Settings</h2>
+            
+            <div class="setting-group">
+                <label for="clickInterval">Click Interval (ms):</label>
+                <input type="number" id="clickInterval" min="10" max="10000" value="100">
+                <span class="info">Delay between clicks</span>
+            </div>
+
+            <div class="setting-group">
+                <label for="totalClicks">Total Clicks:</label>
+                <input type="number" id="totalClicks" min="1" max="1000000" value="100">
+                <span class="info">Number of clicks to perform (0 = infinite)</span>
+            </div>
+
+            <div class="setting-group">
+                <label for="toggleKey">Toggle Key:</label>
+                <input type="text" id="toggleKey" placeholder="F6" value="F6" maxlength="10">
+                <span class="info">Press this key to start/stop clicking</span>
+            </div>
+
+            <div class="setting-group">
+                <label for="startDelay">Start Delay (seconds):</label>
+                <input type="number" id="startDelay" min="0" max="60" value="3">
+                <span class="info">Countdown before clicking starts</span>
+            </div>
+
+            <div class="setting-group checkbox">
+                <input type="checkbox" id="mouseFollow">
+                <label for="mouseFollow">Click at Mouse Position</label>
+                <span class="info">Click wherever your mouse is</span>
+            </div>
+
+            <div class="setting-group">
+                <label for="clickButton">Mouse Button:</label>
+                <select id="clickButton">
+                    <option value="left">Left Click</option>
+                    <option value="right">Right Click</option>
+                    <option value="middle">Middle Click</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="card controls-card">
+            <h2>Controls</h2>
+            <div class="button-group">
+                <button id="startBtn" class="btn btn-success">Start (or press F6)</button>
+                <button id="stopBtn" class="btn btn-danger">Stop</button>
+                <button id="resetBtn" class="btn btn-secondary">Reset</button>
+            </div>
+        </div>
+
+        <div class="card stats-card">
+            <h2>Statistics</h2>
+            <div class="stat-item">
+                <span class="stat-label">Clicks Performed:</span>
+                <span class="stat-value" id="clicksPerformed">0</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-label">Status:</span>
+                <span class="stat-value" id="status">Inactive</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-label">Elapsed Time:</span>
+                <span class="stat-value" id="elapsedTime">0s</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-label">Clicks/Second:</span>
+                <span class="stat-value" id="cps">0</span>
+            </div>
+        </div>
+
+        <div class="card info-card">
+            <h2>ℹ️ Information</h2>
+            <ul>
+                <li><strong>Start/Stop:</strong> Press your toggle key or click the Start button</li>
+                <li><strong>Mouse Position:</strong> Check "Click at Mouse Position" to click where your cursor is</li>
+                <li><strong>Stop Anytime:</strong> Press the toggle key again or click Stop button</li>
+                <li><strong>Infinite Clicking:</strong> Set Total Clicks to 0 for endless clicking</li>
+                <li><strong>Custom Keys:</strong> Use any key like F1, F12, Space, A, etc.</li>
+            </ul>
+        </div>
+
+        <div class="card warning-card">
+            <h2>⚠️ Warning</h2>
+            <p>This tool can cause repetitive strain injury if used excessively. Use responsibly and take regular breaks. Always ensure you're using this tool for legitimate purposes only.</p>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
