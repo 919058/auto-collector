@@ -1,7 +1,7 @@
 """
-Auto Clicker - System-wide mouse automation tool
-WORKING VERSION - Actually performs real clicks
-Requires: pip install pyautogui keyboard mouse pynput
+Auto Clicker - ACTUALLY WORKING VERSION
+Uses mouse library for real system clicks
+Requires: pip install mouse keyboard
 """
 
 import time
@@ -9,12 +9,12 @@ import threading
 from datetime import datetime
 
 try:
-    from pynput.mouse import Button, Controller
-    from pynput.keyboard import Key, Listener
+    import mouse
+    import keyboard
 except ImportError:
     print("❌ Required libraries not found!")
     print("Run this command to install:")
-    print("pip install pynput")
+    print("pip install mouse keyboard")
     exit()
 
 class AutoClickerApp:
@@ -22,8 +22,6 @@ class AutoClickerApp:
         self.is_running = False
         self.click_count = 0
         self.start_time = None
-        self.mouse = Controller()
-        self.listener = None
         
         # Default settings
         self.click_interval = 0.1  # seconds
@@ -34,9 +32,9 @@ class AutoClickerApp:
         
     def display_menu(self):
         """Display the main menu"""
-        print("\n" + "="*60)
-        print("     🖱️  AUTO CLICKER - WORKING VERSION (Real Clicks!)")
-        print("="*60)
+        print("\n" + "="*70)
+        print("     🖱️  AUTO CLICKER - USING MOUSE LIBRARY (ACTUALLY WORKS)")
+        print("="*70)
         print("\n[1] Start Clicking")
         print("[2] Stop Clicking")
         print("[3] Settings")
@@ -45,15 +43,15 @@ class AutoClickerApp:
         
     def display_settings(self):
         """Display current settings"""
-        print("\n" + "-"*60)
+        print("\n" + "-"*70)
         print("Current Settings:")
-        print("-"*60)
+        print("-"*70)
         print(f"Click Interval: {self.click_interval}s ({self.click_interval*1000:.0f}ms)")
         print(f"Total Clicks: {self.total_clicks} (0 = infinite)")
         print(f"Start Delay: {self.start_delay}s")
         print(f"Toggle Key: {self.toggle_key.upper()}")
         print(f"Click Button: {self.click_button}")
-        print("-"*60 + "\n")
+        print("-"*70 + "\n")
         
     def change_settings(self):
         """Change settings"""
@@ -132,15 +130,10 @@ class AutoClickerApp:
         return True
         
     def perform_click(self):
-        """Perform a REAL mouse click"""
+        """Perform a REAL mouse click using mouse library"""
         try:
-            if self.click_button == 'left':
-                self.mouse.click(Button.left, 1)
-            elif self.click_button == 'right':
-                self.mouse.click(Button.right, 1)
-            elif self.click_button == 'middle':
-                self.mouse.click(Button.middle, 1)
-                
+            # This actually performs real system clicks
+            mouse.click(button=self.click_button, clicks=1)
             self.click_count += 1
             return True
         except Exception as e:
@@ -165,7 +158,7 @@ class AutoClickerApp:
             if self.click_count % 5 == 0:
                 elapsed = (datetime.now() - self.start_time).total_seconds()
                 cps = self.click_count / elapsed if elapsed > 0 else 0
-                x, y = self.mouse.position
+                x, y = mouse.get_position()
                 print(f"\r📊 Clicks: {self.click_count:5d} | CPS: {cps:5.2f} | Mouse: ({x}, {y})", end='', flush=True)
             
             # Check if we've reached the click limit
@@ -178,30 +171,12 @@ class AutoClickerApp:
         elapsed = (datetime.now() - self.start_time).total_seconds() if self.start_time else 0
         cps = self.click_count / elapsed if elapsed > 0 else 0
         
-        print(f"\n\n" + "="*60)
+        print(f"\n\n" + "="*70)
         print("✓ Clicking finished!")
         print(f"Total Clicks: {self.click_count}")
         print(f"Time Elapsed: {elapsed:.2f}s")
         print(f"Clicks/Second: {cps:.2f}")
-        print("="*60 + "\n")
-        
-    def on_press(self, key):
-        """Handle keyboard press"""
-        try:
-            # Get the character representation
-            if hasattr(key, 'char'):
-                key_name = key.char.lower() if key.char else None
-            else:
-                key_name = key.name.lower() if hasattr(key, 'name') else None
-            
-            # Check if it matches our toggle key
-            if key_name and key_name == self.toggle_key:
-                if self.is_running:
-                    self.stop()
-                else:
-                    self.start()
-        except AttributeError:
-            pass
+        print("="*70 + "\n")
         
     def start(self):
         """Start the auto clicker"""
@@ -209,11 +184,11 @@ class AutoClickerApp:
             print("❌ Already running!")
             return
             
-        print("\n" + "="*60)
-        print("Starting Auto Clicker...")
+        print("\n" + "="*70)
+        print("🚀 Starting Auto Clicker...")
         print(f"Press {self.toggle_key.upper()} at any time to stop")
         print(f"Settings: {self.click_interval*1000:.0f}ms interval | {self.total_clicks if self.total_clicks > 0 else 'INFINITE'} clicks")
-        print("="*60)
+        print("="*70)
         
         self.is_running = True
         
@@ -221,38 +196,46 @@ class AutoClickerApp:
         click_thread = threading.Thread(target=self.clicking_thread, daemon=True)
         click_thread.start()
         
+        # Wait for toggle key
+        try:
+            while self.is_running:
+                if keyboard.is_pressed(self.toggle_key):
+                    time.sleep(0.2)  # Debounce
+                    self.stop()
+                    break
+                time.sleep(0.05)
+        except KeyboardInterrupt:
+            self.stop()
+        
     def stop(self):
         """Stop the auto clicker"""
         if self.is_running:
             self.is_running = False
-            print("\n\n⏹️  Stopped by user")
+            print("\n\n⏹️  Stopped!")
         
     def test_click(self):
         """Perform a single test click"""
-        print("\n⏳ Click will happen in 2 seconds... Move your mouse to test location")
+        print("\n⏳ Click will happen in 2 seconds...")
+        print("Move your mouse to where you want to test click")
         time.sleep(2)
         
-        x, y = self.mouse.position
+        x, y = mouse.get_position()
         print(f"🖱️  Clicking at position ({x}, {y})")
         self.perform_click()
-        print("✓ Click performed!\n")
+        print("✓ Click performed! Check if it worked.\n")
         
     def run(self):
         """Main application loop"""
-        print("\n" + "="*60)
+        print("\n" + "="*70)
         print("🖱️  AUTO CLICKER - WORKING VERSION")
-        print("="*60)
+        print("="*70)
         print("\n⚠️  IMPORTANT:")
-        print("  • This tool performs REAL mouse clicks")
-        print("  • It will click in any application")
-        print("  • Press Ctrl+C or your toggle key to stop")
+        print("  • This tool performs REAL mouse clicks system-wide")
+        print("  • It will click in any application, game, or browser")
+        print("  • Press your toggle key to stop at any time")
         print("  • Use responsibly!\n")
         
         input("Press ENTER to continue...")
-        
-        # Start listening for hotkeys in background
-        self.listener = Listener(on_press=self.on_press)
-        self.listener.start()
         
         try:
             while True:
@@ -261,9 +244,6 @@ class AutoClickerApp:
                 
                 if choice == '1':
                     self.start()
-                    # Keep program running
-                    while self.is_running:
-                        time.sleep(0.1)
                 elif choice == '2':
                     self.stop()
                 elif choice == '3':
@@ -276,20 +256,22 @@ class AutoClickerApp:
                     break
                 else:
                     print("❌ Invalid option")
-        finally:
-            self.listener.stop()
+        except KeyboardInterrupt:
+            print("\n\n❌ Program interrupted")
             
 
 def main():
     try:
         app = AutoClickerApp()
         app.run()
-    except KeyboardInterrupt:
-        print("\n\n❌ Program interrupted")
     except Exception as e:
         print(f"\n❌ Error: {e}")
-        print("\nMake sure you installed pynput:")
-        print("pip install pynput")
+        print("\nTroubleshooting:")
+        print("1. Make sure you installed the libraries:")
+        print("   pip install mouse keyboard")
+        print("\n2. On Mac, you may need to grant permissions:")
+        print("   System Preferences → Security & Privacy → Accessibility")
+        print("\n3. On Linux, you may need to run with sudo")
 
 
 if __name__ == "__main__":
